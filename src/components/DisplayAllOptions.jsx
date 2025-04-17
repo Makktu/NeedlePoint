@@ -3,14 +3,20 @@ import React from 'react';
 import OptionItem from './OptionItem';
 import optionColors from '../COLORS/COLORS';
 
-export default function DisplayAllOptions(options) {
+export default function DisplayAllOptions({
+  options,
+  currentOptions,
+  optionPicked,
+}) {
+  console.log('✅', currentOptions);
   const debugConsole = (ind, item) => {
     console.log(options);
     console.log(ind + 1, item);
+    optionPicked(ind);
   };
   return (
     <View style={styles.displayAllOptions}>
-      {options.options.map((item, ind) => (
+      {options.map((item, ind) => (
         <OptionItem
           onPress={debugConsole.bind(this, ind, item)}
           key={item}

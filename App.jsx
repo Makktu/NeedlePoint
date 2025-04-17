@@ -3,6 +3,9 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { useState } from 'react';
 import CustomButton from './src/components/CustomButton';
 import DisplayAllOptions from './src/components/DisplayAllOptions';
+import systemPrompt from './src/services/systemPrompt';
+import apiService from './src/services/apiService';
+import { parseOptionsFromLLMResponse } from './src/utils/responseParser';
 
 // Dummy data for testing
 let testArray = [
@@ -14,15 +17,19 @@ let testArray = [
 ];
 
 let testArray2 = [
+  'When is the best time to make a decision?',
+  'What type of decision are you making?',
   'Are you having trouble with a device?',
-  'Need help making a decision?',
-  'Navigation issues.',
-  'Problem with a person or family member?',
-  'None of these match my problem!',
+  'Is it somebody you are trying to contact?',
+  'Ask me again!',
 ];
 
 export default function App() {
   const [started, setStarted] = useState(false);
+  const [questions, setQuestions] = useState(testArray);
+  const [history, setHistory] = useState([]); // Track all user selections
+  const [currentOptions, setCurrentOptions] = useState(testArray); // Current options to display
+  const [isLoading, setIsLoading] = useState(false); // For API call states
 
   const startPress = () => {
     if (started) {
@@ -31,9 +38,48 @@ export default function App() {
       // delay before restarting as visual feedback
       setTimeout(() => {
         setStarted(true);
+        setQuestions(testArray);
       }, 500);
     } else {
       setStarted(true);
+    }
+  };
+
+  const testOptionPicked = (ind) => {
+    console.log('option picked:', ind + 1);
+    setQuestions((prevQuestions) => [...prevQuestions, testArray2]);
+  };
+
+  // When user selects an option
+  const optionPicked = async (ind) => {
+    setIsLoading(true);
+
+    // Add selection to history
+    const selectedOption = currentOptions[ind];
+    const updatedHistory = [...history, selectedOption];
+    setHistory(updatedHistory);
+
+    try {
+      // Format messages for the LLM
+      const messages = [
+        { role: 'system', content: systemPrompt },
+        ...updatedHistory.map((option) => ({ role: 'user', content: option })),
+      ];
+
+      // Call the API
+      const response = await apiService.sendRequest(messages);
+
+      // Parse the LLM response to extract options
+      const newOptions = parseOptionsFromLLMResponse(response); // returns an object with emoji, title, and options array
+      console.log(newOptions.sentEmoji);
+      console.log(newOptions.sentTitle);
+      console.log(newOptions.options);
+      setCurrentOptions(newOptions.options);
+    } catch (error) {
+      console.error('API error:', error);
+      // Handle error state
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -82,7 +128,11 @@ export default function App() {
           bounces={true}
         >
           <View style={styles.optionsContainer}>
-            <DisplayAllOptions options={testArray} />
+            <DisplayAllOptions
+              options={questions.slice(-5)}
+              currentOptions={currentOptions}
+              optionPicked={optionPicked}
+            />
           </View>
         </ScrollView>
       )}
