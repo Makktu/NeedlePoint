@@ -16,7 +16,7 @@ export default function DisplayAllOptions({
   };
   return (
     <View style={styles.displayAllOptions}>
-      {options.map((item, ind) => (
+      {currentOptions.map((item, ind) => (
         <OptionItem
           onPress={debugConsole.bind(this, ind, item)}
           key={item}
