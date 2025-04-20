@@ -8,29 +8,23 @@ import apiService from './src/services/apiService';
 import { parseOptionsFromLLMResponse } from './src/utils/responseParser';
 
 // Dummy data for testing
-let testArray = [
-  'Are you having trouble with a device?',
-  'Need help making a decision?',
-  'Navigation issues.',
-  'Problem with a person or family member?',
+let startingQuestions = [
+  'Technical Issue (device, software, connectivity)',
+  'Communication (writing, messaging)',
+  'Navigation/directions',
+  'Decision-making assistance',
   'None of these match my problem!',
-];
-
-let testArray2 = [
-  'When is the best time to make a decision?',
-  'What type of decision are you making?',
-  'Are you having trouble with a device?',
-  'Is it somebody you are trying to contact?',
-  'Ask me again!',
 ];
 
 export default function App() {
   const [started, setStarted] = useState(false);
-  const [questions, setQuestions] = useState(testArray);
-  const [history, setHistory] = useState([]); // Track all user selections
-  const [currentOptions, setCurrentOptions] = useState(testArray); // Current options to display
+  const [questions, setQuestions] = useState(startingQuestions); // as hardcoded above - possibly let LLM pick as the project advances
+  const [history, setHistory] = useState([]); // Track all user selections - vital for the LLM to maintain context
+  const [currentOptions, setCurrentOptions] = useState(startingQuestions); // Current options to display
   const [isLoading, setIsLoading] = useState(false); // For API call states
+  const [headerMessage, setHeaderMessage] = useState("👀 What's the Problem?");
 
+  // Start the conversation
   const startPress = () => {
     if (started) {
       // Reset other state when needed
@@ -38,16 +32,15 @@ export default function App() {
       // delay before restarting as visual feedback
       setTimeout(() => {
         setStarted(true);
-        setQuestions(testArray);
+        setQuestions(startingQuestions);
+        setCurrentOptions(startingQuestions);
+        setHistory([]);
+        setIsLoading(false);
+        setHeaderMessage("👀 What's the Problem?");
       }, 500);
     } else {
       setStarted(true);
     }
-  };
-
-  const testOptionPicked = (ind) => {
-    console.log('option picked:', ind + 1);
-    setQuestions((prevQuestions) => [...prevQuestions, testArray2]);
   };
 
   // When user selects an option
@@ -70,10 +63,16 @@ export default function App() {
       const response = await apiService.sendRequest(messages);
 
       // Parse the LLM response to extract options
-      const newOptions = parseOptionsFromLLMResponse(response); // returns an object with emoji, title, and options array
-      console.log(newOptions.sentEmoji);
-      console.log(newOptions.sentTitle);
-      console.log(newOptions.options);
+      let message = '';
+      const newOptions = parseOptionsFromLLMResponse(response);
+      if (newOptions.sentEmoji) {
+        message += newOptions.sentEmoji;
+      }
+      if (newOptions.sentTitle) {
+        message += ' ' + newOptions.sentTitle;
+      }
+      console.log(message);
+      setHeaderMessage(message);
       setCurrentOptions(newOptions.options);
     } catch (error) {
       console.error('API error:', error);
@@ -91,7 +90,11 @@ export default function App() {
       <View style={styles.buttonContainer}>
         <CustomButton onPress={startPress}>
           <Text style={{ fontWeight: 'bold', fontSize: 18 }}>
-            {started ? 'START AGAIN' : 'GET STARTED'}
+            {started
+              ? isLoading
+                ? '🤔 THINKING... 🤔'
+                : 'START AGAIN'
+              : 'GET STARTED'}
           </Text>
         </CustomButton>
       </View>
@@ -127,6 +130,11 @@ export default function App() {
           showsVerticalScrollIndicator={true}
           bounces={true}
         >
+          <View style={styles.headerContainer}>
+            <Text style={{ fontSize: 22, color: 'white' }}>
+              {headerMessage}
+            </Text>
+          </View>
           <View style={styles.optionsContainer}>
             <DisplayAllOptions
               options={questions.slice(-5)}
@@ -135,6 +143,12 @@ export default function App() {
             />
           </View>
         </ScrollView>
+      )}
+
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <Text style={styles.loadingText}>🤔 Thinking...</Text>
+        </View>
       )}
     </View>
   );
@@ -176,5 +190,30 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     width: '100%',
+  },
+  headerContainer: {
+    width: '100%',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'orange',
+    padding: 8,
+    borderRadius: 8,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', // semi-transparent black
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000, // ensure it's on top of everything
+  },
+
+  loadingText: {
+    color: 'white',
+    fontSize: 40,
+    fontWeight: 'bold',
   },
 });
