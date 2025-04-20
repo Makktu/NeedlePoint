@@ -5,8 +5,8 @@ class ApiService {
     this.useOpenRouter = true;
     this.localEndpoint = 'http://localhost:1234/v1/chat/completions';
     this.openRouterEndpoint = 'https://openrouter.ai/api/v1/chat/completions';
-    this.defaultModel = 'google/gemma-3-27b-it:free';
-    this.openRouterModel = 'google/gemma-3-27b-it:free'; // Default OpenRouter model - change when needed
+    this.defaultModel = 'meta-llama/llama-4-scout:free';
+    this.openRouterModel = 'meta-llama/llama-4-scout:free'; // Default OpenRouter model - change when needed
   }
 
   toggleApiSource(useOpenRouter) {
