@@ -171,7 +171,7 @@ export default function App() {
             </View>
             <View style={styles.optionsContainer}>
               {(llmConclusion && (
-                <DisplayConclusion conclusion={llmConclusion} />
+                <DisplayConclusion llmConclusion={llmConclusion} />
               )) || (
                 <DisplayAllOptions
                   options={questions.slice(-5)}

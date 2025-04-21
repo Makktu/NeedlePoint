@@ -38,8 +38,8 @@ class ApiService {
     this.useOpenRouter = true;
     this.localEndpoint = 'http://localhost:1234/v1/chat/completions';
     this.openRouterEndpoint = 'https://openrouter.ai/api/v1/chat/completions';
-    this.defaultModel = 'anthropic/claude-3.5-sonnet';
-    this.openRouterModel = 'anthropic/claude-3.5-sonnet'; // Default OpenRouter model - change when needed
+    this.defaultModel = 'google/gemma-3-27b-it:free';
+    this.openRouterModel = 'google/gemma-3-27b-it:free'; // Default OpenRouter model - change when needed
   }
 
   // google/gemma-3-27b-it:free

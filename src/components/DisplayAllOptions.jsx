@@ -19,7 +19,7 @@ export default function DisplayAllOptions({
       {currentOptions.map((item, ind) => (
         <OptionItem
           onPress={debugConsole.bind(this, ind, item)}
-          key={item}
+          key={ind}
           bgCol={{ backgroundColor: optionColors[ind] }}
           numeral={ind + 1}
         >
