@@ -1,10 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
+import { Animated } from 'react-native';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { useState } from 'react';
 import CustomButton from './src/components/CustomButton';
 import DisplayAllOptions from './src/components/DisplayAllOptions';
+import ScrollableIndicator from './src/components/ScrollableIndicator';
 import systemPrompt from './src/services/systemPrompt';
 import apiService from './src/services/apiService';
+import DisplayConclusion from './src/components/DisplayConclusion';
 import { parseOptionsFromLLMResponse } from './src/utils/responseParser';
 
 // Dummy data for testing
@@ -23,6 +26,11 @@ export default function App() {
   const [currentOptions, setCurrentOptions] = useState(startingQuestions); // Current options to display
   const [isLoading, setIsLoading] = useState(false); // For API call states
   const [headerMessage, setHeaderMessage] = useState("👀 What's the Problem?");
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [isContentBelowVisible, setIsContentBelowVisible] = useState(false);
+  const [llmConclusion, setLlmConclusion] = useState('');
+
+  const scrollY = new Animated.Value(0);
 
   // Start the conversation
   const startPress = () => {
@@ -37,10 +45,22 @@ export default function App() {
         setHistory([]);
         setIsLoading(false);
         setHeaderMessage("👀 What's the Problem?");
+        setLlmConclusion('');
       }, 500);
     } else {
       setStarted(true);
     }
+  };
+
+  const handleScroll = (event) => {
+    const currentOffset = event.nativeEvent.contentOffset.y;
+    const contentHeight = event.nativeEvent.contentSize.height;
+    const scrollViewHeight = event.nativeEvent.layoutMeasurement.height;
+
+    setScrollPosition(currentOffset);
+    setIsContentBelowVisible(
+      contentHeight - currentOffset > scrollViewHeight + 20
+    );
   };
 
   // When user selects an option
@@ -69,6 +89,14 @@ export default function App() {
         message += newOptions.sentEmoji;
       }
       if (newOptions.sentTitle) {
+        console.log(
+          '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',
+          newOptions.sentTitle
+        );
+        if (newOptions.sentTitle === "🎯 Here's the likely issue:") {
+          setLlmConclusion(newOptions);
+          console.log(llmConclusion, response);
+        }
         message += ' ' + newOptions.sentTitle;
       }
       console.log(message);
@@ -124,25 +152,40 @@ export default function App() {
 
       {/* Scrollable content area */}
       {started && (
-        <ScrollView
-          style={styles.scrollContainer}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={true}
-          bounces={true}
-        >
-          <View style={styles.headerContainer}>
-            <Text style={{ fontSize: 22, color: 'white' }}>
-              {headerMessage}
-            </Text>
-          </View>
-          <View style={styles.optionsContainer}>
-            <DisplayAllOptions
-              options={questions.slice(-5)}
-              currentOptions={currentOptions}
-              optionPicked={optionPicked}
-            />
-          </View>
-        </ScrollView>
+        <View style={styles.scrollContainer}>
+          <ScrollableIndicator direction='up' visible={scrollPosition > 20} />
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={true}
+            bounces={true}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: false, listener: handleScroll }
+            )}
+            scrollEventThrottle={16}
+          >
+            <View style={styles.headerContainer}>
+              <Text style={{ fontSize: 22, color: 'white' }}>
+                {headerMessage}
+              </Text>
+            </View>
+            <View style={styles.optionsContainer}>
+              {(llmConclusion && (
+                <DisplayConclusion conclusion={llmConclusion} />
+              )) || (
+                <DisplayAllOptions
+                  options={questions.slice(-5)}
+                  currentOptions={currentOptions}
+                  optionPicked={optionPicked}
+                />
+              )}
+            </View>
+          </ScrollView>
+          <ScrollableIndicator
+            direction='down'
+            visible={isContentBelowVisible}
+          />
+        </View>
       )}
 
       {isLoading && (

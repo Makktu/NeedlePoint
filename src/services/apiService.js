@@ -1,13 +1,49 @@
 import { OPENROUTER_API_KEY } from './secrets';
+import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
+
+// Helper function to log responses to file
+async function logResponseToFile(response) {
+  // Only for testing
+  if (Platform.OS === 'web') {
+    console.log('Response logging not available on web');
+    return;
+  }
+
+  try {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const logDir = `${FileSystem.documentDirectory}llm-logs/`;
+    const logFile = `${logDir}response-${timestamp}.json`;
+
+    // Create directory if it doesn't exist
+    const dirInfo = await FileSystem.getInfoAsync(logDir);
+    if (!dirInfo.exists) {
+      await FileSystem.makeDirectoryAsync(logDir, { intermediates: true });
+    }
+
+    // Write the response to file
+    await FileSystem.writeAsStringAsync(
+      logFile,
+      JSON.stringify(response, null, 2)
+    );
+
+    console.log(`Response logged to ${logFile}`);
+  } catch (error) {
+    console.error('Failed to log response:', error);
+  }
+}
 
 class ApiService {
   constructor() {
     this.useOpenRouter = true;
     this.localEndpoint = 'http://localhost:1234/v1/chat/completions';
     this.openRouterEndpoint = 'https://openrouter.ai/api/v1/chat/completions';
-    this.defaultModel = 'meta-llama/llama-4-scout:free';
-    this.openRouterModel = 'meta-llama/llama-4-scout:free'; // Default OpenRouter model - change when needed
+    this.defaultModel = 'anthropic/claude-3.5-sonnet';
+    this.openRouterModel = 'anthropic/claude-3.5-sonnet'; // Default OpenRouter model - change when needed
   }
+
+  // google/gemma-3-27b-it:free
+  // anthropic/claude-3.5-sonnet
 
   toggleApiSource(useOpenRouter) {
     this.useOpenRouter = useOpenRouter;
@@ -98,6 +134,9 @@ class ApiService {
         );
       }
     }
+
+    // Log the response to file
+    await logResponseToFile(data);
 
     return data;
   }
