@@ -3,6 +3,8 @@ export function parseOptionsFromLLMResponse(response) {
   // Extract options from the formatted LLM response
   // Based on your systemPrompt format requirements
   const content = response.choices[0].message.content;
+  console.log('👍 content of parsed response is below:', content);
+
   // Extract emoji (first visible character before the title)
   const sentEmoji = content.trim().charAt(0);
 
@@ -18,6 +20,8 @@ export function parseOptionsFromLLMResponse(response) {
   const optionsArray = optionLines.map((line) =>
     line.replace(/^\d+\.\s/, '').trim()
   );
+
+  // console.log('👉 Parsed options:', optionsArray);
 
   return {
     sentEmoji,

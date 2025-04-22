@@ -98,9 +98,9 @@ class ApiService {
       payload.models = [model];
     }
 
-    console.log('Sending payload to', endpoint);
-    console.log('Using model:', model);
-    console.log('Full payload:', JSON.stringify(payload, null, 2));
+    // console.log('Sending payload to', endpoint);
+    // console.log('Using model:', model);
+    // console.log('Full payload:', JSON.stringify(payload, null, 2));
 
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -174,8 +174,8 @@ class ApiService {
       payload.models = [model];
     }
 
-    console.log('Testing connection with model:', model);
-    console.log('Full payload:', JSON.stringify(payload, null, 2));
+    // console.log('Testing connection with model:', model);
+    // console.log('Full payload:', JSON.stringify(payload, null, 2));
 
     const response = await fetch(endpoint, {
       method: 'POST',

@@ -89,17 +89,13 @@ export default function App() {
         message += newOptions.sentEmoji;
       }
       if (newOptions.sentTitle) {
-        console.log(
-          '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',
-          newOptions.sentTitle
-        );
-        if (newOptions.sentTitle === "🎯 Here's the likely issue:") {
-          setLlmConclusion(newOptions);
-          console.log(llmConclusion, response);
+        // Check if the title is "🎯 Here's the likely issue:"
+        if (newOptions.sentTitle.toLowerCase().includes('likely issue')) {
+          setLlmConclusion(response.choices[0].message.content);
+          console.log('ᣉ', llmConclusion, response);
         }
         message += ' ' + newOptions.sentTitle;
       }
-      console.log(message);
       setHeaderMessage(message);
       setCurrentOptions(newOptions.options);
     } catch (error) {

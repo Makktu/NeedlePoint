@@ -4,7 +4,7 @@ import React from 'react';
 const numerals = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'];
 
 export default function OptionItem({ children, onPress, bgCol, numeral }) {
-  console.log(bgCol);
+  // console.log(bgCol);
   return (
     <Pressable
       onPress={onPress}

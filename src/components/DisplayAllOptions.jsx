@@ -8,10 +8,10 @@ export default function DisplayAllOptions({
   currentOptions,
   optionPicked,
 }) {
-  console.log('✅', currentOptions);
+  // console.log('✅', currentOptions);
   const debugConsole = (ind, item) => {
-    console.log(options);
-    console.log(ind + 1, item);
+    // console.log(options);
+    // console.log(ind + 1, item);
     optionPicked(ind);
   };
   return (
