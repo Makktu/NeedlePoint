@@ -2,6 +2,8 @@ import { OPENROUTER_API_KEY } from './secrets';
 import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
 
+const llmTemperature = 0.2;
+
 // Helper function to log responses to file
 async function logResponseToFile(response) {
   // Only for testing
@@ -38,12 +40,13 @@ class ApiService {
     this.useOpenRouter = true;
     this.localEndpoint = 'http://localhost:1234/v1/chat/completions';
     this.openRouterEndpoint = 'https://openrouter.ai/api/v1/chat/completions';
-    this.defaultModel = 'google/gemma-3-27b-it:free';
-    this.openRouterModel = 'google/gemma-3-27b-it:free'; // Default OpenRouter model - change when needed
+    this.defaultModel = 'deepseek/deepseek-chat-v3-0324:free';
+    this.openRouterModel = 'deepseek/deepseek-chat-v3-0324:free'; // Default OpenRouter model - change when needed
   }
 
   // google/gemma-3-27b-it:free
   // anthropic/claude-3.5-sonnet
+  // deepseek/deepseek-chat-v3-0324:free
 
   toggleApiSource(useOpenRouter) {
     this.useOpenRouter = useOpenRouter;
@@ -66,7 +69,7 @@ class ApiService {
     this.openRouterModel = model;
   }
 
-  async sendRequest(messages, temperature = 0.7) {
+  async sendRequest(messages, llmTemperature) {
     const endpoint = this.getEndpoint();
     const model = this.getModel();
     console.log(model);
@@ -87,7 +90,7 @@ class ApiService {
     const payload = {
       model: model,
       messages: messages,
-      temperature: temperature,
+      temperature: llmTemperature,
     };
 
     // Add OpenRouter-specific parameters to prevent model fallback
@@ -163,7 +166,7 @@ class ApiService {
         { role: 'system', content: 'You are a helpful assistant.' },
         { role: 'user', content: 'Hello' },
       ],
-      temperature: 0.7,
+      temperature: llmTemperature,
     };
 
     // Add OpenRouter-specific parameters to prevent model fallback

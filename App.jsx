@@ -15,7 +15,7 @@ let startingQuestions = [
   'Technical Issue (device, software, connectivity)',
   'Communication (writing, messaging)',
   'Navigation/directions',
-  'Decision-making assistance',
+  'Decision-making advice',
   'None of these match my problem!',
 ];
 
