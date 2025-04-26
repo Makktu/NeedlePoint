@@ -40,8 +40,8 @@ class ApiService {
     this.useOpenRouter = true;
     this.localEndpoint = 'http://localhost:1234/v1/chat/completions';
     this.openRouterEndpoint = 'https://openrouter.ai/api/v1/chat/completions';
-    this.defaultModel = 'deepseek/deepseek-chat-v3-0324:free';
-    this.openRouterModel = 'deepseek/deepseek-chat-v3-0324:free'; // Default OpenRouter model - change when needed
+    this.defaultModel = 'google/gemma-3-27b-it:free';
+    this.openRouterModel = 'google/gemma-3-27b-it:free'; // Default OpenRouter model - change when needed
   }
 
   // google/gemma-3-27b-it:free

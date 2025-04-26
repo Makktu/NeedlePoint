@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { Animated } from 'react-native';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput } from 'react-native';
 import { useState } from 'react';
 import CustomButton from './src/components/CustomButton';
 import DisplayAllOptions from './src/components/DisplayAllOptions';
@@ -29,6 +29,7 @@ export default function App() {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isContentBelowVisible, setIsContentBelowVisible] = useState(false);
   const [llmConclusion, setLlmConclusion] = useState('');
+  const [userInput, setUserInput] = useState('');
 
   const scrollY = new Animated.Value(0);
 
@@ -61,6 +62,12 @@ export default function App() {
     setIsContentBelowVisible(
       contentHeight - currentOffset > scrollViewHeight + 20
     );
+  };
+
+  const userInputReceived = (text) => {
+    setUserInput(text);
+    // setQuestions([text]);
+    console.log(userInput);
   };
 
   // When user selects an option
@@ -123,26 +130,19 @@ export default function App() {
         </CustomButton>
       </View>
       {!started && (
-        <View>
-          <Text style={{ color: 'white', fontSize: 18, textAlign: 'center' }}>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ab commodi
-            velit itaque magnam, culpa fugiat ut deleniti iusto ducimus. Magni
-            eveniet omnis corrupti numquam eligendi aperiam architecto
-            dignissimos praesentium a. Lorem ipsum dolor sit amet consectetur,
-            adipisicing elit. Quam labore at iusto, magni officiis voluptate
-            illo! Fugit omnis quae saepe odio repudiandae modi pariatur dolorem!
-            Ratione ullam excepturi eos quos soluta dolorem iusto ab pariatur
-            tenetur, nihil animi sed quasi eaque perspiciatis in inventore
-            perferendis. Est error aperiam atque, incidunt corrupti numquam
-            laborum aliquam natus eos nam asperiores debitis sequi tempora
-            quidem ducimus? Tempora neque, voluptates vero a aut officiis minima
-            soluta quia ducimus ratione velit fugit similique laudantium sint
-            recusandae, molestias perspiciatis consequuntur et voluptas harum
-            eius obcaecati. Veniam voluptatem incidunt nemo ipsa odit non
-            pariatur quisquam sequi, dignissimos iusto quae quod fugit
-            perspiciatis adipisci optio cum officia quos iste quibusdam fuga
-            suscipit doloribus amet.
+        <View style={styles.inputContainer}>
+          <Text style={styles.textStyle}>
+            Enter a few words about the issue you're having. No need to go into
+            detail - we'll figure it out together.
           </Text>
+          <Text style={styles.textStyle}>Example: "computer slowing down"</Text>
+          <Text style={styles.textStyle}>Example: "want to eat less salt"</Text>
+          <Text style={styles.textStyle}>Anything that's on your mind.</Text>
+          <Text style={styles.textStyle}>Just a few words will do!</Text>
+          <Text style={styles.textStyle}>
+            Or you can just tap GET STARTED and we'll start from a blank slate.
+          </Text>
+          <TextInput style={styles.input} onChangeText={userInputReceived} />
         </View>
       )}
 
@@ -254,5 +254,30 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 40,
     fontWeight: 'bold',
+  },
+  input: {
+    height: 40,
+    width: '100%',
+    borderWidth: 2,
+    borderColor: 'orange',
+    borderRadius: 8,
+    marginVertical: 20,
+    padding: 8,
+    color: 'white',
+    backgroundColor: 'gray',
+  },
+  inputContainer: {
+    width: '90%',
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: 'orange',
+    padding: 4,
+    borderRadius: 8,
+    flexDirection: 'column',
+  },
+  textStyle: {
+    color: 'white',
+    fontSize: 18,
+    marginVertical: 4,
   },
 });
