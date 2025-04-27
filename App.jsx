@@ -38,18 +38,61 @@ export default function App() {
     if (started) {
       // Reset other state when needed
       setStarted(false);
-      // delay before restarting as visual feedback
-      setTimeout(() => {
-        setStarted(true);
-        setQuestions(startingQuestions);
-        setCurrentOptions(startingQuestions);
-        setHistory([]);
-        setIsLoading(false);
-        setHeaderMessage("👀 What's the Problem?");
-        setLlmConclusion('');
-      }, 500);
+      setQuestions(startingQuestions);
+      setCurrentOptions(startingQuestions);
+      setHistory([]);
+      setIsLoading(false);
+      setHeaderMessage("👀 What's the Problem?");
+      setLlmConclusion('');
+      setUserInput('');
     } else {
       setStarted(true);
+      
+      // Check if user provided input text
+      if (userInput.trim()) {
+        // Use the user input directly instead of going through the standard flow
+        setIsLoading(true);
+        
+        // Create a new history with just the user input
+        const newHistory = [userInput.trim()];
+        setHistory(newHistory);
+        
+        // Format messages for the LLM with user input
+        const messages = [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userInput.trim() },
+        ];
+        
+        // Call the API directly with the user's input
+        apiService.sendRequest(messages, 0.2)
+          .then(response => {
+            // Parse the LLM response to extract options
+            let message = '';
+            const newOptions = parseOptionsFromLLMResponse(response);
+            
+            if (newOptions.sentEmoji) {
+              message += newOptions.sentEmoji;
+            }
+            if (newOptions.sentTitle) {
+              // Check if the title is "🎯 Here's the likely issue:"
+              if (newOptions.sentTitle.toLowerCase().includes('likely issue')) {
+                setLlmConclusion(response.choices[0].message.content);
+              }
+              message += ' ' + newOptions.sentTitle;
+            }
+            
+            setHeaderMessage(message);
+            setCurrentOptions(newOptions.options);
+            setIsLoading(false);
+          })
+          .catch(error => {
+            console.error('API error:', error);
+            setIsLoading(false);
+          });
+      } else {
+        // No user input, use standard starting questions
+        setCurrentOptions(startingQuestions);
+      }
     }
   };
 
@@ -87,7 +130,7 @@ export default function App() {
       ];
 
       // Call the API
-      const response = await apiService.sendRequest(messages);
+      const response = await apiService.sendRequest(messages, 0.2);
 
       // Parse the LLM response to extract options
       let message = '';
@@ -166,9 +209,13 @@ export default function App() {
               </Text>
             </View>
             <View style={styles.optionsContainer}>
-              {(llmConclusion && (
+              {llmConclusion ? (
                 <DisplayConclusion llmConclusion={llmConclusion} />
-              )) || (
+              ) : isLoading && userInput.trim() ? (
+                <Text style={{ fontSize: 18, color: 'white', textAlign: 'center', marginTop: 20 }}>
+                  Processing your question...
+                </Text>
+              ) : (
                 <DisplayAllOptions
                   options={questions.slice(-5)}
                   currentOptions={currentOptions}

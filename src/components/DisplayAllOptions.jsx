@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import OptionItem from './OptionItem';
 import optionColors from '../COLORS/COLORS';
