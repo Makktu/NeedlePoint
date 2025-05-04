@@ -36,7 +36,7 @@ export default function App() {
   // Start the conversation
   const startPress = () => {
     if (started) {
-      // Reset other state when needed
+      // Reset all states to restart
       setStarted(false);
       setQuestions(startingQuestions);
       setCurrentOptions(startingQuestions);

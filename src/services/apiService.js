@@ -40,13 +40,16 @@ class ApiService {
     this.useOpenRouter = true;
     this.localEndpoint = 'http://localhost:1234/v1/chat/completions';
     this.openRouterEndpoint = 'https://openrouter.ai/api/v1/chat/completions';
-    this.defaultModel = 'anthropic/claude-3.5-sonnet';
-    this.openRouterModel = 'anthropic/claude-3.5-sonnet'; // Default OpenRouter model - change when needed
+    this.defaultModel = 'nvidia/llama-3.1-nemotron-ultra-253b-v1:free';
+    this.openRouterModel = 'nvidia/llama-3.1-nemotron-ultra-253b-v1:free'; // Default OpenRouter model - change when needed
   }
 
   // google/gemma-3-27b-it:free
   // anthropic/claude-3.5-sonnet
   // deepseek/deepseek-chat-v3-0324:free
+  // qwen/qwen3-235b-a22b:free
+  // google/gemini-2.5-pro-exp-03-25
+  // nvidia/llama-3.1-nemotron-ultra-253b-v1:free
 
   toggleApiSource(useOpenRouter) {
     this.useOpenRouter = useOpenRouter;
@@ -96,7 +99,7 @@ class ApiService {
     // Add OpenRouter-specific parameters to prevent model fallback
     if (this.useOpenRouter) {
       payload.route = 'fallback:none'; // Strict setting to prevent any fallback
-      payload.transforms = ['middle-out'];
+      payload.transforms = ['middle-out', 'no-thinking'];
       // Force specific model only
       payload.models = [model];
     }
