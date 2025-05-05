@@ -40,8 +40,8 @@ class ApiService {
     this.useOpenRouter = true;
     this.localEndpoint = 'http://localhost:1234/v1/chat/completions';
     this.openRouterEndpoint = 'https://openrouter.ai/api/v1/chat/completions';
-    this.defaultModel = 'nvidia/llama-3.1-nemotron-ultra-253b-v1:free';
-    this.openRouterModel = 'nvidia/llama-3.1-nemotron-ultra-253b-v1:free'; // Default OpenRouter model - change when needed
+    this.defaultModel = 'google/gemma-3-27b-it:free';
+    this.openRouterModel = 'google/gemma-3-27b-it:free'; // change for testing
   }
 
   // google/gemma-3-27b-it:free
