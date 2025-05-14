@@ -169,7 +169,7 @@ export default function App() {
               ? isLoading
                 ? '🤔 THINKING... 🤔'
                 : 'START AGAIN'
-              : 'GET STARTED'}
+              : 'Choose an option.\nTap here any time to restart.'}
           </Text>
         </CustomButton>
       </View>
