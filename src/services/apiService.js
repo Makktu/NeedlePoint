@@ -40,8 +40,8 @@ class ApiService {
     this.useOpenRouter = true;
     this.localEndpoint = 'http://localhost:1234/v1/chat/completions';
     this.openRouterEndpoint = 'https://openrouter.ai/api/v1/chat/completions';
-    this.defaultModel = 'google/gemma-3-27b-it:free';
-    this.openRouterModel = 'google/gemma-3-27b-it:free'; // change for testing
+    this.defaultModel = 'meta-llama/llama-4-maverick:free';
+    this.openRouterModel = 'meta-llama/llama-4-maverick:free'; // change for testing
   }
 
   // google/gemma-3-27b-it:free
@@ -50,6 +50,7 @@ class ApiService {
   // qwen/qwen3-235b-a22b:free
   // google/gemini-2.5-pro-exp-03-25
   // nvidia/llama-3.1-nemotron-ultra-253b-v1:free
+  // meta-llama/llama-4-maverick:free
 
   toggleApiSource(useOpenRouter) {
     this.useOpenRouter = useOpenRouter;
