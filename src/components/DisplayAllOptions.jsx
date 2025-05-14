@@ -21,7 +21,6 @@ export default function DisplayAllOptions({
           onPress={debugConsole.bind(this, ind, item)}
           key={ind}
           bgCol={{ backgroundColor: optionColors[ind] }}
-          numeral={ind + 1}
         >
           {item}
         </OptionItem>

@@ -12,11 +12,9 @@ import { parseOptionsFromLLMResponse } from './src/utils/responseParser';
 
 // Dummy data for testing
 let startingQuestions = [
-  'Technical Issue (device, software, connectivity)',
-  'Communication (writing, messaging)',
-  'Navigation/directions',
-  'Decision-making advice',
-  'None of these match my problem!',
+  'Help me solve a personal problem',
+  'Help me plan or create something',
+  'Other (Let me describe the issue)',
 ];
 
 export default function App() {
@@ -25,7 +23,9 @@ export default function App() {
   const [history, setHistory] = useState([]); // Track all user selections - vital for the LLM to maintain context
   const [currentOptions, setCurrentOptions] = useState(startingQuestions); // Current options to display
   const [isLoading, setIsLoading] = useState(false); // For API call states
-  const [headerMessage, setHeaderMessage] = useState("👀 What's the Problem?");
+  const [headerMessage, setHeaderMessage] = useState(
+    '🧩 How can I assist you?'
+  );
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isContentBelowVisible, setIsContentBelowVisible] = useState(false);
   const [llmConclusion, setLlmConclusion] = useState('');
@@ -42,34 +42,35 @@ export default function App() {
       setCurrentOptions(startingQuestions);
       setHistory([]);
       setIsLoading(false);
-      setHeaderMessage("👀 What's the Problem?");
+      setHeaderMessage('🧩 How can I assist you?');
       setLlmConclusion('');
       setUserInput('');
     } else {
       setStarted(true);
-      
+
       // Check if user provided input text
       if (userInput.trim()) {
         // Use the user input directly instead of going through the standard flow
         setIsLoading(true);
-        
+
         // Create a new history with just the user input
         const newHistory = [userInput.trim()];
         setHistory(newHistory);
-        
+
         // Format messages for the LLM with user input
         const messages = [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userInput.trim() },
         ];
-        
+
         // Call the API directly with the user's input
-        apiService.sendRequest(messages, 0.2)
-          .then(response => {
+        apiService
+          .sendRequest(messages, 0.2)
+          .then((response) => {
             // Parse the LLM response to extract options
             let message = '';
             const newOptions = parseOptionsFromLLMResponse(response);
-            
+
             if (newOptions.sentEmoji) {
               message += newOptions.sentEmoji;
             }
@@ -80,12 +81,12 @@ export default function App() {
               }
               message += ' ' + newOptions.sentTitle;
             }
-            
+
             setHeaderMessage(message);
             setCurrentOptions(newOptions.options);
             setIsLoading(false);
           })
-          .catch(error => {
+          .catch((error) => {
             console.error('API error:', error);
             setIsLoading(false);
           });
@@ -174,18 +175,11 @@ export default function App() {
       </View>
       {!started && (
         <View style={styles.inputContainer}>
-          <Text style={styles.textStyle}>
-            Enter a few words about the issue you're having. No need to go into
-            detail - we'll figure it out together.
-          </Text>
-          <Text style={styles.textStyle}>Example: "computer slowing down"</Text>
-          <Text style={styles.textStyle}>Example: "want to eat less salt"</Text>
-          <Text style={styles.textStyle}>Anything that's on your mind.</Text>
-          <Text style={styles.textStyle}>Just a few words will do!</Text>
-          <Text style={styles.textStyle}>
-            Or you can just tap GET STARTED and we'll start from a blank slate.
-          </Text>
-          <TextInput style={styles.input} onChangeText={userInputReceived} />
+          <DisplayAllOptions
+            options={questions.slice(-5)}
+            currentOptions={currentOptions}
+            optionPicked={optionPicked}
+          />
         </View>
       )}
 
@@ -212,7 +206,14 @@ export default function App() {
               {llmConclusion ? (
                 <DisplayConclusion llmConclusion={llmConclusion} />
               ) : isLoading && userInput.trim() ? (
-                <Text style={{ fontSize: 18, color: 'white', textAlign: 'center', marginTop: 20 }}>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: 'white',
+                    textAlign: 'center',
+                    marginTop: 20,
+                  }}
+                >
                   Processing your question...
                 </Text>
               ) : (
@@ -316,10 +317,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: '90%',
     marginBottom: 20,
-    borderWidth: 2,
-    borderColor: 'orange',
     padding: 4,
-    borderRadius: 8,
     flexDirection: 'column',
   },
   textStyle: {

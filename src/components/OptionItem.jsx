@@ -1,16 +1,13 @@
 import { View, StyleSheet, Text, Pressable } from 'react-native';
 import React from 'react';
 
-const numerals = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'];
-
-export default function OptionItem({ children, onPress, bgCol, numeral }) {
+export default function OptionItem({ children, onPress, bgCol }) {
   // console.log(bgCol);
   return (
     <Pressable
       onPress={onPress}
       style={[styles.optionDefault, { backgroundColor: bgCol.backgroundColor }]}
     >
-      <Text style={styles.numeralStyle}>{numerals[numeral - 1]}</Text>
       <Text style={styles.textStyle}>{children}</Text>
     </Pressable>
   );
