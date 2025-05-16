@@ -12,7 +12,7 @@ import { parseOptionsFromLLMResponse } from './src/utils/responseParser';
 
 // Dummy data for testing
 let startingQuestions = [
-  'Help me solve a personal problem',
+  'Advise me about a personal problem',
   'Help me plan or create something',
   'Other (Let me describe the issue)',
 ];
@@ -95,6 +95,7 @@ export default function App() {
         setCurrentOptions(startingQuestions);
       }
     }
+    console.log(started);
   };
 
   const handleScroll = (event) => {
@@ -116,6 +117,9 @@ export default function App() {
 
   // When user selects an option
   const optionPicked = async (ind) => {
+    if (!started) {
+      setStarted(true);
+    }
     setIsLoading(true);
 
     // Add selection to history
@@ -180,6 +184,14 @@ export default function App() {
             currentOptions={currentOptions}
             optionPicked={optionPicked}
           />
+          <View style={styles.disclaimer}>
+            <Text style={{ color: 'white', fontSize: 20 }}>
+              💡IMPORTANT {'\n'}Please remember that you are interacting with an
+              AI.{'\n'}
+              {'\n'}It'll hopefully be helpful, but anything it says has the
+              possibility of being wrong. Treat this encounter as advisory only.
+            </Text>
+          </View>
         </View>
       )}
 
@@ -324,5 +336,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     marginVertical: 4,
+  },
+  disclaimer: {
+    color: 'white',
+    marginTop: 10,
+    borderColor: 'orange',
+    borderWidth: 2,
+    borderRadius: 8,
+    padding: 18,
   },
 });
