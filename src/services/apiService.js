@@ -40,8 +40,8 @@ class ApiService {
     this.useOpenRouter = true;
     this.localEndpoint = 'http://localhost:1234/v1/chat/completions';
     this.openRouterEndpoint = 'https://openrouter.ai/api/v1/chat/completions';
-    this.defaultModel = 'meta-llama/llama-4-maverick:free';
-    this.openRouterModel = 'meta-llama/llama-4-maverick:free'; // change for testing
+    this.defaultModel = 'anthropic/claude-3.5-sonnet';
+    this.openRouterModel = 'anthropic/claude-3.5-sonnet'; // change for testing
   }
 
   // google/gemma-3-27b-it:free
